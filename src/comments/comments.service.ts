@@ -12,24 +12,33 @@ import { paginate } from 'src/helpers/pagination';
 import { User } from 'src/users/users.model';
 import { SortCommentDto } from './dto/sort-comment.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import PQueue from 'p-queue';
 
 @Injectable()
 export class CommentsService {
+  private _queue: PQueue;
   constructor(
     @InjectModel(Comment) private readonly commentRepository: typeof Comment,
     private readonly filesService: FilesService,
     private readonly eventEmitter: EventEmitter2,
-  ) {}
+  ) {
+    this._queue = new PQueue({ concurrency: 10 });
+    this._queue.on('idle', () => {
+      console.log('All tasks have been completed.');
+    });
+  }
 
   async create(dto: CreateCommentDto, ownerId: number, file?: any) {
-    const commentInstance = await this.createCommentInstance(
-      dto,
-      ownerId,
-      file,
-    );
-    const comment = await this.commentRepository.create(commentInstance);
-    this.eventEmitter.emit('comment.new', comment);
-    return comment;
+    return this._queue.add(async () => {
+      const commentInstance = await this.createCommentInstance(
+        dto,
+        ownerId,
+        file,
+      );
+      const comment = await this.commentRepository.create(commentInstance);
+      this.eventEmitter.emit('comment.new', comment);
+      return comment;
+    });
   }
 
   private async createCommentInstance(
