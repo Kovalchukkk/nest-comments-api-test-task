@@ -14,6 +14,7 @@ import { Comment } from './comments/comments.model';
 import { CommentsModule } from './comments/comments.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { Bookmark } from './bookmarks/bookmarks.model';
+import { AppGateway } from 'app.gateway';
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { Bookmark } from './bookmarks/bookmarks.model';
     BookmarksModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AppGateway],
 })
 export class AppModule {}

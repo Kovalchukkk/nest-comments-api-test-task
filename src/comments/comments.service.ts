@@ -11,12 +11,14 @@ import { Comment } from './comments.model';
 import { paginate } from 'src/helpers/pagination';
 import { User } from 'src/users/users.model';
 import { SortCommentDto } from './dto/sort-comment.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectModel(Comment) private readonly commentRepository: typeof Comment,
     private readonly filesService: FilesService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(dto: CreateCommentDto, ownerId: number, file?: any) {
@@ -26,6 +28,7 @@ export class CommentsService {
       file,
     );
     const comment = await this.commentRepository.create(commentInstance);
+    this.eventEmitter.emit('comment.new', comment);
     return comment;
   }
 
