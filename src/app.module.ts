@@ -26,7 +26,7 @@ import { AppGateway } from 'app.gateway';
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      uri: process.env.DATABASE_URL,
+      uri: process.env.DATABASE_PRIVATE_URL,
       models: [User, Role, UserRoles, Comment, Bookmark],
       autoLoadModels: true,
     }),
