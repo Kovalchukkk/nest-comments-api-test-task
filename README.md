@@ -1,4 +1,4 @@
-# Project Title
+# NestJS Comments REST API
 
 This is a REST API project built with the following technologies:
 
